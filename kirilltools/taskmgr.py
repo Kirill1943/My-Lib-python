@@ -69,6 +69,8 @@ class monitor:
 [#48ff00]release: {info["info"]['release']}
 [#48ff00]---------------
 [#48ff00]WINDOWS?: {info["info"]["oses"]["win"]}
+[#48ff00]LINUX?: {info["info"]["oses"]["linux"]}
+[#48ff00]MACOS?: {info["info"]["oses"]['macos']}
                         '''
                     )
             except KeyboardInterrupt:
@@ -77,5 +79,5 @@ class monitor:
             except Exception as e:
                 print(f'возникла ошибка: {e}')
                 return
-
+            
 monitor(fps=30)

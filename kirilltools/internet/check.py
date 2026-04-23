@@ -14,13 +14,11 @@ class Get:
         1 элемент списка - результат get-инга
         2 элемент списка - переменная get-а
         """
-        # Добавим проверку и на https
         if url.startswith('https://'):
             raise HttpsError('Библиотека не поддерживает https')
         if not url.startswith('http://'):
             url = 'http://' + url
         try:
-            # Разделяем логику: await только для асинхрона
             if self.async_:
                 resp = await self.__client.get(url)
             else:
