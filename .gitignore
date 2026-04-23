@@ -1,0 +1,18 @@
+# папки сборки и метаданные
+build/
+*.egg-info/
+dist/
+# ненужный кеш
+__pycache__/
+# локальные настройки редактора кода автора
+.vscode/
+# логи
+*.log
+
+# прочее
+*.env
+*.env.local
+*.secret.json
+*.secrets.json
+*.python_history
+
