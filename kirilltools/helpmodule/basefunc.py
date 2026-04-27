@@ -1,4 +1,5 @@
 import time
+from kirilltools.errors.base import ForceInterruptionError
 
 def help1():
     txt = '''
@@ -35,9 +36,12 @@ print("+ 35")
 a = input('введи число: ') # выведет в консоли то что написано и будет ждать ввода
 
 '''
-    for i in txt:
-        print(i, end='', flush=True)
-        time.sleep(0.001)
+    try:
+        for i in txt:
+            print(i, end='', flush=True)
+            time.sleep(0.001)
+    except KeyboardInterrupt:
+        raise ForceInterruptionError("ты прервал скрипт") from None
 
 def help2():
     txt = '''
@@ -59,9 +63,12 @@ player = {
 }
 print(player['xp']) # покажет 30!
 '''
-    for i in txt:
-        print(i, end='', flush=True)
-        time.sleep(0.001)
+    try:
+        for i in txt:
+            print(i, end='', flush=True)
+            time.sleep(0.001)
+    except KeyboardInterrupt:
+        raise ForceInterruptionError("ты прервал скрипт") from None
 
 def help3():
     txt = """
@@ -75,7 +82,18 @@ if 1 == 2 #: бред полнейший
     pass
 elif 1 == 1: # уже верно
     pass # а вот это условие выполнится!
+а так-же есть оператор else - он выполняется когда все условия ложны
+a = True
+if not a:
+    pass
+elif a != False and a != True:
+    pass
+else:
+    pass # это условие будет выполнено
 """
-    for i in txt:
-        print(i, end='', flush=True)
-        time.sleep(0.001)
+    try:
+        for i in txt:
+            print(i, end='', flush=True)
+            time.sleep(0.001)
+    except KeyboardInterrupt:
+        raise ForceInterruptionError("ты прервал скрипт") from None

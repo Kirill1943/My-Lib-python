@@ -1,4 +1,6 @@
-import internet
-import helpmodule
-import errors
-import taskmgr
+
+if __name__ == "__main__":
+    import kirilltools.errors.base
+    raise kirilltools.errors.base.RunInitError('не вызывать напрямую!!')
+else:
+    from . import *
