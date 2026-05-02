@@ -15,6 +15,16 @@ class MathTasks:
         except TypeError:
             raise err.TypesError("одна или больше из входных значений это строка / bool!")
         return (a + b) * c
+    def task2(self, a, b, c):
+        """
+        задача: было a единиц. вычли произведение b и c
+        формула: a - (b * c)
+        """
+        try:
+            a, b, c = float(a), float(b), float(c)
+        except TypeError:
+            raise err.TypesError("одна или больше из входных значений это строка / bool!")
+        return a - (b * c)
 def get_kilo(square_meters, kilo_in_one_meter_cubed=1) -> float:
     try:
         square_meters = float(square_meters)
