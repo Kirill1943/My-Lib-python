@@ -12,7 +12,7 @@ class MathTasks:
         """
         try:
             a, b, c = float(a), float(b), float(c)
-        except TypeError:
+        except (ValueError, TypeError):
             raise err.TypesError("одна или больше из входных значений это строка / bool!")
         return (a + b) * c
     def task2(self, a, b, c):
@@ -22,14 +22,14 @@ class MathTasks:
         """
         try:
             a, b, c = float(a), float(b), float(c)
-        except TypeError:
+        except (ValueError, TypeError):
             raise err.TypesError("одна или больше из входных значений это строка / bool!")
         return a - (b * c)
 def get_kilo(square_meters, kilo_in_one_meter_cubed=1) -> float:
     try:
         square_meters = float(square_meters)
         kilo_in_one_meter_cubed = float(kilo_in_one_meter_cubed)
-    except TypeError:
+    except (ValueError, TypeError):
         raise err.TypesError("нельзя умножить строки и числа и получить массу!") from None
     kg = kilo_in_one_meter_cubed * square_meters
     return float(kg)

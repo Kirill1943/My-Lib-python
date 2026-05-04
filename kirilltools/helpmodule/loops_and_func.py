@@ -1,4 +1,4 @@
-import basefunc
+import kirilltools.helpmodule.basefunc as basefunc
 import time
 from kirilltools.errors.base import ForceInterruptionError
 

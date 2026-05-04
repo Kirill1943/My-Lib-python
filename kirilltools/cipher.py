@@ -8,7 +8,7 @@ def Caesar_cipher(text: str, next: int = 1024) -> str:
     """
     try:
         next = int(next)
-    except TypeError:
+    except (ValueError, TypeError):
         raise TypesError("ты ввел не число в поле next!") from None
     return_text = ''
     for i in text:

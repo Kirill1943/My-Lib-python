@@ -4,6 +4,7 @@ build/
 dist/
 # ненужный кеш
 __pycache__/
+*.pyc
 # локальные настройки редактора кода автора
 .vscode/
 # логи
@@ -15,4 +16,4 @@ __pycache__/
 *.secret.json
 *.secrets.json
 *.python_history
-
+reports/
