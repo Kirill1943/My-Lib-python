@@ -20,6 +20,36 @@ class ramInfo:
             "all": geter.total
         }
         return swap
+class BatteryInfo:
+    def __init__(self):
+        pass
+    def isbattery(self):
+        return psutil.sensors_battery() is None
+    def getpowertime(self, seconds):
+        days = seconds // 86400
+        hours = (seconds % 86400) // 3600
+        minutes = (seconds % 3600) // 60
+        secs = seconds % 60
+        parts = []
+        if days > 0: parts.append(f"{days}д")
+        if hours > 0: parts.append(f"{hours}ч")
+        if minutes > 0: parts.append(f"{minutes}м")
+        if secs > 0 or not parts: parts.append(f"{secs}с")
+        return " ".join(parts)
+    def get(self):
+        battery = {"battery?": False}
+        if not self.isbattery():
+            info = psutil.sensors_battery()
+            s = info.secsleft
+            battery["battery?"] = True
+            battery["заряд %"] = info.percent
+            if s == psutil.POWER_TIME_UNLIMITED:
+                battery["осталось до разряда"] = float('inf')
+            elif s == psutil.POWER_TIME_UNKNOWN:
+                battery['осталось до разряда'] = "?"
+            else:
+                battery["осталось до разряда"] = self.getpowertime(s)
+        return battery
 class PlatFormInfo:
     def __init__(self):
         pass
@@ -49,11 +79,15 @@ class monitor:
     def __init__(self, fps):
         with rich.live.Live('', refresh_per_second=max(2, min(fps, 60))) as live:
             try:
+                ramclass = ramInfo()
+                platformclass = PlatFormInfo()
+                batteryclass = BatteryInfo()
                 while True:
-                    "#00fffb" #! не трогать! hex не отображается без этого
-                    ram = ramInfo().getram()
-                    swap = ramInfo().getswap()
-                    info = PlatFormInfo().get()
+                    ram = ramclass.getram()
+                    swap = ramclass.getswap()
+                    info = platformclass.get()
+                    battery = batteryclass.get()
+                    isbatt = battery["battery?"]
                     live.update(
                         f'''
 [#008cff]-------- RAM / SWAP --------[/]
@@ -71,6 +105,10 @@ class monitor:
 [#48ff00]WINDOWS?: {info["info"]["oses"]["win"]}
 [#48ff00]LINUX?: {info["info"]["oses"]["linux"]}
 [#48ff00]MACOS?: {info["info"]["oses"]['macos']}
+[#c8ff00]-------- BATTERY ]--------[/]
+[#c8ff00]is battery?: {isbatt}
+[#c8ff00]количество %: {battery["заряд %"] if isbatt else None}
+[#c8ff00]осталось до разряда батареи: {battery['осталось до разряда'] if isbatt else None}
                         '''
                     )
             except KeyboardInterrupt:
