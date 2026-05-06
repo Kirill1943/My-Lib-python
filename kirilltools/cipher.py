@@ -16,7 +16,22 @@ def Caesar_cipher(text: str, next: int = 1024) -> str:
         return_text = return_text + str(i)
     return return_text
 
-def custom_cipher(text: str, key: list) -> dict:
+def uncoding_caesar_cipher(text: str, next: int = 1024):
+    """
+    декодирует шифр цезаря сдвигая
+    каждую букву текста на позиции назад
+    """
+    try:
+        next = int(next)
+    except (ValueError, TypeError):
+        raise TypesError("ты ввел не число в поле next!") from None
+    return_text = ''
+    for i in text:
+        i = chr(ord(i) - next)
+        return_text = return_text + str(i)
+    return return_text
+
+def custom_cipher(text: str, key: list) -> str:
     """
     это функция позволяющая зашифровать своим ключом
     сообщение. работает это по принципу списков в списке, пример:

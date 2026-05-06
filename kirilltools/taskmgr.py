@@ -49,6 +49,7 @@ class BatteryInfo:
                 battery['осталось до разряда'] = "?"
             else:
                 battery["осталось до разряда"] = self.getpowertime(s)
+            battery["заряжается?"] = info.power_plugged
         return battery
 class PlatFormInfo:
     def __init__(self):
@@ -79,6 +80,7 @@ class monitor:
     def __init__(self, fps):
         with rich.live.Live('', refresh_per_second=max(2, min(fps, 60))) as live:
             try:
+                gb = 1024 ** 3
                 ramclass = ramInfo()
                 platformclass = PlatFormInfo()
                 batteryclass = BatteryInfo()
@@ -91,12 +93,12 @@ class monitor:
                     live.update(
                         f'''
 [#008cff]-------- RAM / SWAP --------[/]
-[#008cff]Ram-USED: {ram["used"] / (1024 ** 3):.6f} GB
-[#008cff]Ram-FREE: {ram["free"] / (1024 ** 3):.6f} GB
-[#008cff]Ram-TOTAL: {ram["all"] / (1024 ** 3):.6f} GB
-[#00fffb]SWAP-USED: {swap["used"] / (1024 ** 3):.6f} GB
-[#00fffb][#00fffb]SWAP-FREE: {swap["free"] / (1024 ** 3):.6f} GB
-[#00fffb]SWAP-TOTAL: {swap["all"] / (1024 ** 3):.6f} GB
+[#008cff]Ram-USED: {ram["used"] / gb:.6f} GB
+[#008cff]Ram-FREE: {ram["free"] / gb:.6f} GB
+[#008cff]Ram-TOTAL: {ram["all"] / gb:.6f} GB
+[#00fffb]SWAP-USED: {swap["used"] / gb:.6f} GB
+[#00fffb]SWAP-FREE: {swap["free"] / gb:.6f} GB
+[#00fffb]SWAP-TOTAL: {swap["all"] / gb:.6f} GB
 [#48ff00]--------- PLATFORM ----------[/]
 [#48ff00]os: {info["info"]["os"]} {info["info"]['release']}
 [#48ff00]version: {info['info']['vers']}
@@ -109,6 +111,7 @@ class monitor:
 [#c8ff00]is battery?: {isbatt}
 [#c8ff00]количество %: {battery["заряд %"] if isbatt else None}
 [#c8ff00]осталось до разряда батареи: {battery['осталось до разряда'] if isbatt else None}
+[#c8ff00]заряжается?: {battery["заряжается?"] if isbatt else None}
                         '''
                     )
             except KeyboardInterrupt:
@@ -117,3 +120,5 @@ class monitor:
             except Exception as e:
                 print(f'возникла ошибка: {e}')
                 return
+
+monitor(fps=60)

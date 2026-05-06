@@ -5,15 +5,17 @@ dist/
 # ненужный кеш
 __pycache__/
 *.pyc
+*.cpython-*-.pyc
 # локальные настройки редактора кода автора
 .vscode/
 # логи
 *.log
 
-# прочее
+# секретные файлы
 *.env
 *.env.local
 *.secret.json
 *.secrets.json
-*.python_history
+# прочее
 reports/
+*.python_history

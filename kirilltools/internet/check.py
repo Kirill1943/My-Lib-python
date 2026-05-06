@@ -1,5 +1,4 @@
 import httpx, json, asyncio
-from kirilltools.errors.Wifi import ConnectError, HttpsError
 
 class Get:
     def __init__(self, async_: bool = False):
@@ -9,50 +8,65 @@ class Get:
         else:
             self.__client = httpx.Client(http1=True, follow_redirects=True)
 
-    async def get(self, url: str):
-        """
-        1 элемент списка - результат get-инга
-        2 элемент списка - переменная get-а
-        """
-        if url.startswith('https://'):
-            raise HttpsError('Библиотека не поддерживает https')
-        if not url.startswith('http://'):
-            url = 'http://' + url
+    def _process_resp(self, resp):
+        resjson = {
+            "status code": resp.status_code,
+            "http-vers": resp.http_version,
+            "heds": dict(resp.headers),
+            "cookie": dict(resp.cookies),
+            "data": {"body": resp.text}
+        }
         try:
-            if self.async_:
-                resp = await self.__client.get(url)
-            else:
-                resp = self.__client.get(url)
+            json1 = resp.json()
+        except (json.JSONDecodeError, Exception):
+            json1 = 'Not Json'
+        resjson["data"]["json"] = json1
+        return resjson, resp
+
+    async def _async_get(self, url: str):
+        try:
+            resp = await self.__client.get(url)
+            return self._process_resp(resp)
         except (httpx.ReadTimeout, httpx.ConnectError, httpx.ConnectTimeout):
-            raise ConnectError('Нету подключения к интернету!')
-        else:
-            resjson = {
-                "status code": resp.status_code,
-                "http-vers": resp.http_version,
-                "heds": dict(resp.headers),
-                "cookie": dict(resp.cookies),
-                "data": {
-                    "body": resp.text
-                }
-            }
-            try:
-                json1 = resp.json()
-            except json.JSONDecodeError:
-                json1 = 'Not Json'
-            resjson["data"]["json"] = json1
-            return resjson, resp
+            raise Exception('Нету подключения к интернету!')
+
+    def _sync_get(self, url: str):
+        try:
+            resp = self.__client.get(url)
+            return self._process_resp(resp)
+        except (httpx.ReadTimeout, httpx.ConnectError, httpx.ConnectTimeout):
+            raise Exception('Нету подключения к интернету!')
+
+    def get(self, url: str):
+        if not url.startswith(('http://', 'https://')):
+            url = 'http://' + url
+            
+        if self.async_:
+            return self._async_get(url)
+        return self._sync_get(url)
+
     async def testinet(self):
         websites = ['http://google.com', 'http://pypi.org']
-        try:
-            if self.async_:
-                tasks = [self.get(url) for url in websites]
-                # Собираем всё в один список
-                a = list(await asyncio.gather(*tasks))
-            else:
-                a = []
-                for i in websites:
-                    res = await self.get(i)
-                    a.append(res)
-            return a
-        except (httpx.ReadTimeout, httpx.ConnectError, httpx.ConnectTimeout):
-            raise ConnectError('нету соединения')
+        if self.async_:
+            tasks = [self.get(url) for url in websites]
+            return list(await asyncio.gather(*tasks))
+        else:
+            return [self.get(url) for url in websites]
+
+def ping():
+    targets = {
+        "google": "http://google.com",
+        "dns гугла": "http://8.8.8.8",
+        "dns cloudflare": "http://1.1.1.1",
+        "yandex": "http://yandex.ru"
+    }
+    results = {}
+    with httpx.Client(timeout=2.0) as http:
+        for name, url in targets.items():
+            try:
+                http.get(url)
+                results[name] = True
+            except httpx.RequestError:
+                results[name] = False
+    
+    return "\n".join([f"{k} ответил? {v}" for k, v in results.items()])
