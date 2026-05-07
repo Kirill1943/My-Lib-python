@@ -10,11 +10,39 @@ def Caesar_cipher(text: str, next: int = 1024) -> str:
         next = int(next)
     except (ValueError, TypeError):
         raise TypesError("ты ввел не число в поле next!") from None
+    
     return_text = ''
     for i in text:
-        i = chr(ord(i) + next)
+        # ФИКС ТУТ: считаем остаток от суммы, чтобы не вылетало за 0x110000
+        i = chr((ord(i) + next) % 1114112)
         return_text = return_text + str(i)
     return return_text
+
+def Super_Caesar_Cipher(text: str, next: int = 1024, once: int = 2):
+    """
+    кодирует шифром цезаря несколько раз подряд
+    """
+    try:
+        once = int(once)
+    except (ValueError, TypeError):
+        raise TypesError("ты ввел не число в поле once!") from None
+    result = text
+    for i in range(once):
+        result = Caesar_cipher(result, next=next)
+    return result
+
+def Super_Uncode_Caesar_Cipher(text: str, next: int = 1024, once: int = 2):
+    """
+    декодирует шифр цезаря несколько раз подряд
+    """
+    try:
+        once = int(once)
+    except (ValueError, TypeError):
+        raise TypesError("ты ввел не число в поле once!") from None
+    result = text
+    for i in range(once):
+        result = uncoding_caesar_cipher(result, next=next)
+    return result
 
 def uncoding_caesar_cipher(text: str, next: int = 1024):
     """
@@ -25,9 +53,11 @@ def uncoding_caesar_cipher(text: str, next: int = 1024):
         next = int(next)
     except (ValueError, TypeError):
         raise TypesError("ты ввел не число в поле next!") from None
+    
     return_text = ''
     for i in text:
-        i = chr(ord(i) - next)
+        # ФИКС ТУТ: считаем остаток от разности, чтобы не уходило в минус
+        i = chr((ord(i) - next) % 1114112)
         return_text = return_text + str(i)
     return return_text
 

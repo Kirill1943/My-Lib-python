@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Kiriltools',
-    version='0.3.0-alpha6',
+    version='0.3.0-alpha7',
     packages=find_packages(),
     install_requires=[
         'httpx', 'h11', 'httpcore', 'anyio', # httpx и зависимости
@@ -10,9 +10,9 @@ setup(
         "rich", "markdown-it-py", "pygments" # rich и зависимости
     ],
     license="GPL-3.0-or-later",
-    description=
-    """
-1. добавлены декораторы в модуль utils (добавление)
-2. добавлены ошибки для декораторов в модуль errors (добавление)
-    """
+    description='3 добавления',
+    author="kirill1943",
+    url="https://github.com/Kirill1943/My-Lib-python",
+    long_description=open('README.md', encoding='utf-8').read(),
+    long_description_content_type='text/markdown'
 )

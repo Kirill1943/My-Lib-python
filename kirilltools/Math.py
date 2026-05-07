@@ -34,3 +34,16 @@ def get_kilo(square_meters, kilo_in_one_meter_cubed=1) -> float:
     kg = kilo_in_one_meter_cubed * square_meters
     return float(kg)
 
+def tetration(num, height):
+    """
+    Математическая операция тетрации (башня степеней)
+    height - сколько раз число возводится в свою степень
+    """
+    try:
+        if height == 0: return 1
+        result = num
+        for _ in range(height - 1):
+            result = num ** result
+        return result
+    except OverflowError:
+        raise err.NumOwerflowError("слишком огромное число")
