@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Kirilltools"
-version = "0.3.0-alpha8"
-description = "3 добавления"
+version = "0.3.0-alpha9"
+description = "6 добавлений 2 удаления"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "GPL-3.0-or-later"}

@@ -1,4 +1,5 @@
 import kirilltools.errors.math as err
+import kirilltools.errors.base as baseerr
 
 class MathTasks:
     """
@@ -40,10 +41,16 @@ def tetration(num, height):
     height - сколько раз число возводится в свою степень
     """
     try:
+        num, height = int(num), int(height)
+    except (ValueError, TypeError):
+        raise err.TypesError("ты ввел не число в один из аргументов")
+    try:
         if height == 0: return 1
         result = num
         for _ in range(height - 1):
             result = num ** result
         return result
     except OverflowError:
-        raise err.NumOwerflowError("слишком огромное число")
+        raise err.NumOwerflowError("слишком огромное число") from None
+    except KeyboardInterrupt:
+        raise baseerr.ForceInterruptionError("скрипт прерван")

@@ -120,5 +120,3 @@ class monitor:
             except Exception as e:
                 print(f'возникла ошибка: {e}')
                 return
-
-monitor(fps=60)

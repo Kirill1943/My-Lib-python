@@ -86,7 +86,7 @@ def nerd(func):
             raise err.LogoutError("ты сбежал от этого психа но функция не выполнилась") from None
     return runner
 
-@nerd
-def a():
-    pass
-a()
+def null(func):
+    def nullfunc(*a, **k):
+        pass
+    return nullfunc
