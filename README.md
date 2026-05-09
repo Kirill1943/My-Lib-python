@@ -10,3 +10,12 @@
 * [Giampaolo Rodola](https://github.com/giampaolo) - а конкретнее его библиотека python psutil, она помогла в модуле kirilltools.taskmgr, без его библиотеки я автор проекта не смог бы реализовать модуль
 * [Tom Christie](https://github.com/tomchristie) - проекту помогла его библиотека python httpx, она помогла в модуле kirilltools.internet, без его проекта модуля бы просто не было
 * [Will McGugan](https://github.com/willmcgugan) - создатель rich, именно с помощью его библиотеки я смог реализовать красоту отображения
+### актуальные команды для скачивания:
+```sh
+# 1 способ (через исходный код)
+git clone https://github.com/kirill1943/My-Lib-Python.git
+cd "My-Lib-Python"
+pip install .
+# 2 способ (напрямую)
+pip install git+https://github.com/kirill1943/My-Lib-Python
+```

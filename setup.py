@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='Kiriltools',
-    version='0.3.0-alpha7',
+    name='Kirilltools',
+    version='0.3.0-alpha8',
     packages=find_packages(),
     install_requires=[
         'httpx', 'h11', 'httpcore', 'anyio', # httpx и зависимости
