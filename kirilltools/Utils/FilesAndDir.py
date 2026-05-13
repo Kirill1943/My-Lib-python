@@ -43,12 +43,11 @@ class GenStructures:
             pth = os.getcwd()
             os.chdir(path)
             dirlib = "Lib"
-            files = ["README.md", "setup.py", "pyproject.toml"] # Поправил g на j
+            files = ["README.md", "setup.py", "pyproject.toml"]
             
             if not os.path.exists(dirlib):
                 os.mkdir(dirlib)
             
-            # Добавляем "w" для init и исправляем путь на dirlib
             with open(os.path.join(dirlib, "__init__.py"), "w", encoding="utf-8") as init, \
                 open(files[2], "w", encoding="utf-8") as pyprogct, \
                 open(files[1], "w", encoding='utf-8') as setup, \

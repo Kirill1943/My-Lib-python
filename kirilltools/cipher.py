@@ -13,7 +13,6 @@ def Caesar_cipher(text: str, next: int = 1024) -> str:
     
     return_text = ''
     for i in text:
-        # ФИКС ТУТ: считаем остаток от суммы, чтобы не вылетало за 0x110000
         i = chr((ord(i) + next) % 1114112)
         return_text = return_text + str(i)
     return return_text
@@ -56,33 +55,26 @@ def uncoding_caesar_cipher(text: str, next: int = 1024):
     
     return_text = ''
     for i in text:
-        # ФИКС ТУТ: считаем остаток от разности, чтобы не уходило в минус
         i = chr((ord(i) - next) % 1114112)
         return_text = return_text + str(i)
     return return_text
 
 def custom_cipher(text: str, key: list) -> str:
     """
-    это функция позволяющая зашифровать своим ключом
-    сообщение. работает это по принципу списков в списке, пример:
-    text = abc
-    key = [["a", "b"], ["c", "b"]]
-    вернет bbb
+    Шифрует сообщение пользовательским ключом за один безопасный проход,
+    чтобы символы не перезаписывали друг друга по цепочке.
     """
-    try:
-        if not isinstance(key, list):
-            raise err.KeyFormatError("Ключ должен быть списком! (list)")
+    if not isinstance(key, list):
+        raise err.KeyFormatError("Ключ должен быть списком! (list)")
+    for item in key:
+        if not isinstance(item, list) or len(item) != 2:
+            raise err.KeyFormatError("Каждый элемент ключа должен быть списком [old, new]!")
 
-        for item in key:
-            if not isinstance(item, list) or len(item) != 2:
-                raise err.KeyFormatError("Каждый элемент ключа должен быть списком [old, new]!")
-            
-            old, new = item
-            text = text.replace(str(old), str(new))
+    try:
+        translation_table = {ord(str(old)[0]): str(new) for old, new in key}
+        return text.translate(translation_table)
     except Exception as e:
         raise err.KeyFormatError(f"Битый / неверный ключ! Ошибка: {e}") from None
-
-    return text
 
 
 def keys() -> dict:

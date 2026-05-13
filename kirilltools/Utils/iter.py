@@ -18,7 +18,7 @@ def gen_chank(list_: list, size: int) -> list:
 def list_flattening(list_: list) -> list:
     result_list = []
     for i in list_:
-        if not isinstance(i, list()):
+        if not isinstance(i, list):
             raise err.NotListInListError("функция предназначена для сплющивания списков, а у тебя в списке нету списка")
         else:
             result_list.extend(i)

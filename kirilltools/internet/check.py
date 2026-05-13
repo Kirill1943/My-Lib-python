@@ -120,8 +120,8 @@ def MultCheck(http1=True, http2=True, log=False):
             except (httpx.ConnectError, httpx.ReadTimeout, httpx.ConnectTimeout, httpx.TimeoutException, httpx.RequestError):
                 pypi = 0
             if log:
-                print(f"pypi: {"Ответил" if pypi != 0 else "Нет соsединения"}, status code: {pypi}")
-            result += f"\npypi: {"Ответил" if pypi != 0 else "Нет соsединения"}, status code: {pypi}"
+                print(f"pypi: {"Ответил" if pypi != 0 else "Нет соединения"}, status code: {pypi}")
+            result += f"\npypi: {"Ответил" if pypi != 0 else "Нет соединения"}, status code: {pypi}"
                 
     except KeyboardInterrupt:
         raise err.ForceInterruptionError("скрипт прерван") from None
