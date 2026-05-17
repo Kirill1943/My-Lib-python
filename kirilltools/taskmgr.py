@@ -1,11 +1,11 @@
-import platform, psutil
+import platform as _platform, psutil as _psutil
 import rich.live
 
 class ramInfo:
     def __init__(self):
         pass
     def getram(self) -> dict:
-        geter = psutil.virtual_memory()
+        geter = _psutil.virtual_memory()
         ram = {
             "used": geter.used,
             "free": geter.available,
@@ -13,7 +13,7 @@ class ramInfo:
         }
         return ram
     def getswap(self) -> dict:
-        geter = psutil.swap_memory()
+        geter = _psutil.swap_memory()
         swap = {
             "used": geter.used,
             "free": geter.free,
@@ -24,7 +24,7 @@ class BatteryInfo:
     def __init__(self):
         pass
     def isbattery(self):
-        return psutil.sensors_battery() is None
+        return _psutil.sensors_battery() is None
     def getpowertime(self, seconds):
         days = seconds // 86400
         hours = (seconds % 86400) // 3600
@@ -39,13 +39,13 @@ class BatteryInfo:
     def get(self):
         battery = {"battery?": False}
         if not self.isbattery():
-            info = psutil.sensors_battery()
+            info = _psutil.sensors_battery()
             s = info.secsleft
             battery["battery?"] = True
             battery["заряд %"] = info.percent
-            if s == psutil.POWER_TIME_UNLIMITED:
+            if s == _psutil.POWER_TIME_UNLIMITED:
                 battery["осталось до разряда"] = float('inf')
-            elif s == psutil.POWER_TIME_UNKNOWN:
+            elif s == _psutil.POWER_TIME_UNKNOWN:
                 battery['осталось до разряда'] = "?"
             else:
                 battery["осталось до разряда"] = self.getpowertime(s)
@@ -56,17 +56,17 @@ class PlatFormInfo:
         pass
     def get(self):
         pydict = {
-            "vers": platform.python_version(),
-            "pybuild": platform.python_build()
+            "vers": _platform.python_version(),
+            "pybuild": _platform.python_build()
         }
         infodict = {
-            "os": platform.system(),
-            "vers": platform.version(),
-            "release": platform.release(),
+            "os": _platform.system(),
+            "vers": _platform.version(),
+            "release": _platform.release(),
             "oses": {
-                "win": psutil.WINDOWS,
-                "linux": psutil.LINUX,
-                "macos": psutil.MACOS
+                "win": _psutil.WINDOWS,
+                "linux": _psutil.LINUX,
+                "macos": _psutil.MACOS
             }
         }
         dicter = {

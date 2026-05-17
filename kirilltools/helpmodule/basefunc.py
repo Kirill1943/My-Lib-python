@@ -1,4 +1,4 @@
-import time
+import time as _time
 from kirilltools.errors.base import ForceInterruptionError
 
 def help1():
@@ -39,7 +39,7 @@ a = input('введи число: ') # выведет в консоли то ч�
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None
 
@@ -66,7 +66,7 @@ print(player['xp']) # покажет 30!
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None
 
@@ -94,6 +94,6 @@ else:
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None

@@ -1,6 +1,6 @@
 import kirilltools.helpmodule.loops_and_func as help
 from kirilltools.errors.base import ForceInterruptionError
-import time
+import time as _time
 
 def help1(): help.help1()
 def help2(): help.help2()
@@ -43,7 +43,7 @@ NameError - классика. используешь переменную кот
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None
 
@@ -92,7 +92,7 @@ python -m pip install <lib> # если несколько питонов (да �
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None
 
@@ -153,6 +153,6 @@ class Cat(Pet):
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None

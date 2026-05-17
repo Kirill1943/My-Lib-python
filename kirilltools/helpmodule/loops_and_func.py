@@ -1,5 +1,5 @@
 import kirilltools.helpmodule.basefunc as basefunc
-import time
+import time as _time
 from kirilltools.errors.base import ForceInterruptionError
 
 def help1(): basefunc.help1()
@@ -37,7 +37,7 @@ for i in range(1, 6): # range(a, b) это как числа от числа a �
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None
 
@@ -98,7 +98,7 @@ add = decorate(add)
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None
 
@@ -107,6 +107,6 @@ def help6():
     try:
         for i in txt:
             print(i, end='', flush=True)
-            time.sleep(0.001)
+            _time.sleep(0.001)
     except KeyboardInterrupt:
         raise ForceInterruptionError("ты прервал скрипт") from None

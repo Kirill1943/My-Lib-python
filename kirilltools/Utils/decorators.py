@@ -1,32 +1,32 @@
-from time import time as unixtime, sleep
-from rich import print
-from functools import wraps
-from secrets import token_urlsafe as gentoken
-from rich.live import Live
+from time import time as _unixtime, sleep as _sleep
+from rich import print as _print
+from functools import wraps as _wraps
+from secrets import token_urlsafe as _gentoken
+from rich.live import Live as _Live
 import kirilltools.errors.decorators as err
-import threading
+import threading as _threading
 
 def time_meter(func):
     """
     замеряет время выполнения функции
     """
-    @wraps(func)
+    @_wraps(func)
     def runner(*a, **k):
-        start = unixtime()
+        start = _unixtime()
         result = func(*a, **k)
-        end = unixtime()
-        print(f'[#00FF00] функция сработала за {end - start:.9f} секунд')
+        end = _unixtime()
+        _print(f'[#00FF00] функция сработала за {end - start:.9f} секунд')
         return result
     return runner
-def keylocker(password=gentoken(8), getpassword=False):
+def keylocker(password=_gentoken(8), getpassword=False):
     """
     блокирует выполнение функции если не ввел пароль
     если не успел ввести в течении 45 секунд то вылетает исключение
     """
     def decorate(func):
-        @wraps(func)
+        @_wraps(func)
         def runner(*a, **k):
-            print(f'[#FF0000]Инициализация защиты... (Пароль: {'#'*8 if not getpassword else password})')
+            _print(f'[#FF0000]Инициализация защиты... (Пароль: {'#'*8 if not getpassword else password})')
             
             remaining_time = 40
             unlocking = False
@@ -38,21 +38,21 @@ def keylocker(password=gentoken(8), getpassword=False):
                 if user_input == password:
                     unlocking = True
 
-            input_thread = threading.Thread(target=get_input, daemon=True)
+            input_thread = _threading.Thread(target=get_input, daemon=True)
             input_thread.start()
             try:
-                with Live("", refresh_per_second=10) as live:
+                with _Live("", refresh_per_second=10) as live:
                     while remaining_time > 0 and not unlocking:
                         color = '#FF0000' if remaining_time < 15 else '#FFFF00'
                         live.update(f'[{color}]Осталось: {remaining_time} сек. ВВОДИ ПАРОЛЬ!')
                         
-                        sleep(1)
+                        _sleep(1)
                         remaining_time -= 1
             except KeyboardInterrupt:
                 pass
             
             if unlocking:
-                print("[#00FF00]ДОСТУП РАЗРЕШЕН!")
+                _print("[#00FF00]ДОСТУП РАЗРЕШЕН!")
                 return func(*a, **k)
             else:
                 raise err.NotUnlockError("Время вышло! Ты не успел!") from None
@@ -60,29 +60,29 @@ def keylocker(password=gentoken(8), getpassword=False):
     return decorate
 
 def nerd(func):
-    @wraps(func)
+    @_wraps(func)
     def runner(*a, **k):
         try:
             def test():
-                print('nerd: КТО УМНЕЕ: Я ИЛИ ТЫ?')
+                _print('nerd: КТО УМНЕЕ: Я ИЛИ ТЫ?')
                 if input("Ответ: ") != "ты":
-                    print('[#FF0000]NERD: НЕВЕРНО! ПШЕЛ ИЗ МОЕЙ ШКОЛЫ!')
+                    _print('[#FF0000]NERD: НЕВЕРНО! ПШЕЛ ИЗ МОЕЙ ШКОЛЫ!')
                     raise err.TrubkaError("nerd обозвал тебя тупицей") from None
-                print('nerd: ВЕРНО!')
+                _print('nerd: ВЕРНО!')
                 return func(*a, **k)
 
-            print('nerd: ТААК! ХОЧЕШЬ ТУТ ФУНКЦИЮ ЗАПУСТИТЬ? ДАВАЙ ОТВЕЧАЙ')
+            _print('nerd: ТААК! ХОЧЕШЬ ТУТ ФУНКЦИЮ ЗАПУСТИТЬ? ДАВАЙ ОТВЕЧАЙ')
             result = input("Да или Нет?: ")
             
             if result != "Да":
-                print("nerd: ТЕБЯ НЕ СПРАШИВАЛИ БЫСТРО ОТВЕТЬ!")
+                _print("nerd: ТЕБЯ НЕ СПРАШИВАЛИ БЫСТРО ОТВЕТЬ!")
             else:
-                print('nerd: ТЕПЕРЬ ОТВЕЧАЙ:')
+                _print('nerd: ТЕПЕРЬ ОТВЕЧАЙ:')
             
             return test()
 
         except KeyboardInterrupt:
-            print("\n[#FF0000]nerd: КУДА ПОБЕЖАЛ?!")
+            _print("\n[#FF0000]nerd: КУДА ПОБЕЖАЛ?!")
             raise err.LogoutError("ты сбежал от этого психа но функция не выполнилась") from None
     return runner
 

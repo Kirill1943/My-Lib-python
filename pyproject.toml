@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Kirilltools"
-version = "0.3.0-beta1"
-description = "3 исправления 1 удаление"
+version = "0.3.0"
+description = "Всякие мелкие утилиты, справка, менеджер задач.."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "GPL-3.0-or-later"
