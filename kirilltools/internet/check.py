@@ -124,5 +124,5 @@ def MultCheck(http1=True, http2=True, log=False):
             result += f"\npypi: {"Ответил" if pypi != 0 else "Нет соединения"}, status code: {pypi}"
                 
     except KeyboardInterrupt:
-        raise err.ForceInterruptionError("скрипт прерван") from None
+        raise err._ForceInterruptionError("скрипт прерван") from None
     return result

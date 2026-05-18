@@ -1,13 +1,13 @@
-import kirilltools.helpmodule.loops_and_func as help
-from kirilltools.errors.base import ForceInterruptionError
+import kirilltools.helpmodule.loops_and_func as _help
+from kirilltools.errors.base import ForceInterruptionError as _ForceInterruptionError
 import time as _time
 
-def help1(): help.help1()
-def help2(): help.help2()
-def help3(): help.help3()
-def help4(): help.help4()
-def help5(): help.help5()
-def help6(): help.help6()
+def help1(): _help.help1()
+def help2(): _help.help2()
+def help3(): _help.help3()
+def help4(): _help.help4()
+def help5(): _help.help5()
+def help6(): _help.help6()
 
 def help7():
     txt = '''
@@ -45,7 +45,7 @@ NameError - классика. используешь переменную кот
             print(i, end='', flush=True)
             _time.sleep(0.001)
     except KeyboardInterrupt:
-        raise ForceInterruptionError("ты прервал скрипт") from None
+        raise _ForceInterruptionError("ты прервал скрипт") from None
 
 
 def help8():
@@ -94,7 +94,7 @@ python -m pip install <lib> # если несколько питонов (да �
             print(i, end='', flush=True)
             _time.sleep(0.001)
     except KeyboardInterrupt:
-        raise ForceInterruptionError("ты прервал скрипт") from None
+        raise _ForceInterruptionError("ты прервал скрипт") from None
 
 def help9():
     txt = '''
@@ -149,10 +149,12 @@ class Cat(Pet):
         super().__init__(self, name, age)
     def great(self): # ВОТ! мы заменили метод Pet.great на свой great
         print('питомец мяукает')
+
+и вот такой простой полиморфизм! но это работает и с полями. так-же..
 '''
     try:
         for i in txt:
             print(i, end='', flush=True)
             _time.sleep(0.001)
     except KeyboardInterrupt:
-        raise ForceInterruptionError("ты прервал скрипт") from None
+        raise _ForceInterruptionError("ты прервал скрипт") from None

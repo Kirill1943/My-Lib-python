@@ -1,32 +1,7 @@
 import kirilltools.errors.math as err
 import kirilltools.errors.base as baseerr
 
-class MathTasks:
-    """
-    в этом классе описаны простые математические задания
-    """
-    def __init__(self):
-        pass
-    def task1(self, a, b, c):
-        """
-        задача: вычисление суммы a и b умноженной на c: (a + b) * c
-        """
-        try:
-            a, b, c = float(a), float(b), float(c)
-        except (ValueError, TypeError):
-            raise err.TypesError("одна или больше из входных значений это строка / bool!")
-        return (a + b) * c
-    def task2(self, a, b, c):
-        """
-        задача: было a единиц. вычли произведение b и c
-        формула: a - (b * c)
-        """
-        try:
-            a, b, c = float(a), float(b), float(c)
-        except (ValueError, TypeError):
-            raise err.TypesError("одна или больше из входных значений это строка / bool!")
-        return a - (b * c)
-def get_kilo(square_meters, kilo_in_one_meter_cubed=1) -> float:
+def get_kilo(square_meters: float, kilo_in_one_meter_cubed: float = 1) -> float:
     try:
         square_meters = float(square_meters)
         kilo_in_one_meter_cubed = float(kilo_in_one_meter_cubed)
@@ -35,7 +10,7 @@ def get_kilo(square_meters, kilo_in_one_meter_cubed=1) -> float:
     kg = kilo_in_one_meter_cubed * square_meters
     return float(kg)
 
-def tetration(num, height):
+def tetration(num: int, height: int) -> int:
     """
     Математическая операция тетрации (башня степеней)
     height - сколько раз число возводится в свою степень
@@ -52,5 +27,19 @@ def tetration(num, height):
         return result
     except OverflowError:
         raise err.NumOwerflowError("слишком огромное число") from None
+    except MemoryError:
+        raise baseerr.MemoryEndError("память переполнилась")
     except KeyboardInterrupt:
         raise baseerr.ForceInterruptionError("скрипт прерван")
+
+def double_factorial(x):
+    try:
+        x = int(x)
+    except (ValueError, TypeError):
+        raise err.TypesError("ты ввел не число!")
+    if x <= 0:
+        return 1
+    result = 1
+    for i in range(x, 0, -2):
+        result *= i
+    return result
