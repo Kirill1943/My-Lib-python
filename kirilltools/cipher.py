@@ -17,7 +17,7 @@ def Caesar_cipher(text: str, next: int = 1024) -> str:
         return_text = return_text + str(i)
     return return_text
 
-def Super_Caesar_Cipher(text: str, next: int = 1024, once: int = 2):
+def Super_Caesar_Cipher(text: str, next: int = 1024, once: int = 2) -> str:
     """
     кодирует шифром цезаря несколько раз подряд
     """
@@ -30,7 +30,7 @@ def Super_Caesar_Cipher(text: str, next: int = 1024, once: int = 2):
         result = Caesar_cipher(result, next=next)
     return result
 
-def Super_Uncode_Caesar_Cipher(text: str, next: int = 1024, once: int = 2):
+def Super_Uncode_Caesar_Cipher(text: str, next: int = 1024, once: int = 2) -> str:
     """
     декодирует шифр цезаря несколько раз подряд
     """
@@ -43,7 +43,7 @@ def Super_Uncode_Caesar_Cipher(text: str, next: int = 1024, once: int = 2):
         result = uncoding_caesar_cipher(result, next=next)
     return result
 
-def uncoding_caesar_cipher(text: str, next: int = 1024):
+def uncoding_caesar_cipher(text: str, next: int = 1024) -> str:
     """
     декодирует шифр цезаря сдвигая
     каждую букву текста на позиции назад

@@ -32,7 +32,7 @@ def tetration(num: int, height: int) -> int:
     except KeyboardInterrupt:
         raise baseerr.ForceInterruptionError("скрипт прерван")
 
-def double_factorial(x):
+def double_factorial(x) -> int:
     try:
         x = int(x)
     except (ValueError, TypeError):

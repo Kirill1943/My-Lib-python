@@ -2,7 +2,7 @@ import platform as _platform, psutil as _psutil
 import rich.live
 
 class ramInfo:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
     def getram(self) -> dict:
         geter = _psutil.virtual_memory()
@@ -21,11 +21,11 @@ class ramInfo:
         }
         return swap
 class BatteryInfo:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
-    def isbattery(self):
+    def isbattery(self) -> bool:
         return _psutil.sensors_battery() is None
-    def getpowertime(self, seconds):
+    def getpowertime(self, seconds) -> str:
         days = seconds // 86400
         hours = (seconds % 86400) // 3600
         minutes = (seconds % 3600) // 60
@@ -36,7 +36,7 @@ class BatteryInfo:
         if minutes > 0: parts.append(f"{minutes}м")
         if secs > 0 or not parts: parts.append(f"{secs}с")
         return " ".join(parts)
-    def get(self):
+    def get(self) -> bool:
         battery = {"battery?": False}
         if not self.isbattery():
             info = _psutil.sensors_battery()
@@ -52,9 +52,9 @@ class BatteryInfo:
             battery["заряжается?"] = info.power_plugged
         return battery
 class PlatFormInfo:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
-    def get(self):
+    def get(self) -> dict:
         pydict = {
             "vers": _platform.python_version(),
             "pybuild": _platform.python_build()
@@ -77,8 +77,10 @@ class PlatFormInfo:
 
 
 class monitor:
-    def __init__(self, fps):
-        with rich.live.Live('', refresh_per_second=max(2, min(fps, 60))) as live:
+    def __init__(self, fps) -> None:
+        self.fps = fps
+    def run(self) -> None:
+        with rich.live.Live('', refresh_per_second=max(2, min(self.fps, 60))) as live:
             try:
                 gb = 1024 ** 3
                 ramclass = ramInfo()

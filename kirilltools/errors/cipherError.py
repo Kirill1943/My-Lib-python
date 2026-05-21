@@ -1,4 +1,9 @@
-import kirilltools.errors.base as baseerr
+import kirilltools.errors.base as _baseerr
 
-class CipherError(baseerr.BaseExceptionlib): pass
+class CipherError(_baseerr.BaseExceptionlib): pass
 class KeyFormatError(CipherError): pass
+
+__all__ = [
+    "CipherError",
+    "KeyFormatError"
+]
