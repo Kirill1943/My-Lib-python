@@ -1,0 +1,116 @@
+import kirilltools.helpmodule.OpenAndModule as _help
+from kirilltools.errors.base import ForceInterruptionError as _ForceInterruptionError
+import time as _time
+
+def help1(): _help.help1()
+def help2(): _help.help2()
+def help3(): _help.help3()
+def help4(): _help.help4()
+def help5(): _help.help5()
+def help6(): _help.help6()
+def help7(): _help.help7()
+def help8(): _help.help8()
+def help9(): _help.help9()
+def help10(): _help.help10()
+def help11(): _help.help11()
+def help12(): _help.help12()
+
+
+def help13() -> None:
+    txt = '''
+а теперь мы разберем как создать собственные модули! представь что у тебя есть своя функция
+которую ты используешь постоянно. вставлять каждый раз везде def func(): ... это
+не по стандарту, для этого и существуют модули и пакеты. разберем 2 способа создать это:
+
+1. просто создать пару файлов-модулей и использовать их
+2. создавать реальную библиотеку
+
+сначала разберем 1 способ:
+этот способ самый простой, для этого подготовь структуру:
+
+package (или любое другое название)
+├── module.py
+└── __init__.py
+
+module.py: это будет наш основной модуль. можно добавить различные модули по типу math_tools.py, tools.py
+__init__.py: а вот это обязательно! это нужно чтобы python распознал что это не директория с файлами а пакет с модулями!
+и вдобавок __init__.py это скрипт который вызывается пайтоном при импорте библиотеки
+
+например напишем в main функцию:
+
+def great():
+    print('привет от моей библиотеки!')
+
+и уже все готово! и укажем на всякий случай вот это в __init__.py:
+
+from . import *
+
+а затем можно создать скрипт, вот структура:
+
+..
+├── package
+│   ├── module.py
+│   └── __init__.py
+└── script.py
+
+и теперь напишем скрипт в script.py:
+from package.module import great
+
+great()
+
+выведет: привет от моей библиотеки!
+и теперь можно развивать и развивать этот пакет. а уже другое дело: реально создать свою библиотеку
+
+для этого тебе нужна точно такая же структура для библиотеки mytools:
+
+.
+├── Mytools/
+│   ├── __init__.py
+│   └── module.py
+└── pyproject.toml
+
+структура простая - для большой библиотеки такая точно не нужна, засовывать все в один файл:
+зачем тогда библиотека? и еще - pyproject.toml это стандарт, обычный setup.py устарел
+pyproject.toml:
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Mytools"
+version = "0.0.1"
+
+[tool.setuptools]
+packages = ["Mytools"]
+
+и смотри - сейчас библиотеку невозможно использовать. надо установить библиотеку
+
+открой терминал. и напиши в нем:
+
+pip install .
+# или python -m pip install .
+
+если у тебя linux и такой вариант не очень нормальный:
+
+pip install . --user
+'''
+    try:
+        for i in txt:
+            print(i, end='', flush=True)
+            _time.sleep(0.001)
+    except KeyboardInterrupt:
+        raise _ForceInterruptionError("ты прервал скрипт") from None
+
+def helpall() -> None:
+    glbs = globals()
+    for i in range(1, 14):
+        glbs[f"help{i}"]()
+
+
+__all__ = [
+    "help1", "help2", "help3", "help4", 
+    "help5", "help6", "help7", "help8", 
+    "help9", "help10", "help11", "help12",
+    "help13", "helpall"
+]

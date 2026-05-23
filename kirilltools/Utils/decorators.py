@@ -3,7 +3,8 @@ from rich import print as _print
 from functools import wraps as _wraps
 from secrets import token_urlsafe as _gentoken
 from rich.live import Live as _Live
-import kirilltools.errors.decorators as err
+import kirilltools.errors.decorators as _err
+import kirilltools.errors.math as _matherr
 import threading as _threading
 
 def time_meter(func):
@@ -55,20 +56,32 @@ def keylocker(password=_gentoken(8), getpassword=False):
                 _print("[#00FF00]ДОСТУП РАЗРЕШЕН!")
                 return func(*a, **k)
             else:
-                raise err.NotUnlockError("Время вышло! Ты не успел!") from None
+                raise _err.NotUnlockError("Время вышло! Ты не успел!") from None
         return runner
     return decorate
 
 def nerd(func):
+    """
+    очень заумный декоратор, надо ответить на вопросы чтобы функция выполнилась
+    """
     @_wraps(func)
     def runner(*a, **k):
         try:
             def test():
                 _print('nerd: КТО УМНЕЕ: Я ИЛИ ТЫ?')
-                if input("Ответ: ") != "ты":
+                if input("Ответ: ").lower() != "ты":
                     _print('[#FF0000]NERD: НЕВЕРНО! ПШЕЛ ИЗ МОЕЙ ШКОЛЫ!')
-                    raise err.TrubkaError("nerd обозвал тебя тупицей") from None
+                    raise _err.TrubkaError("nerd обозвал тебя тупицей") from None
                 _print('nerd: ВЕРНО!')
+                _print('nerd: СКОЛЬКО БУДЕТ КОРЕНЬ 100 РАЗДЕЛИТЬ НА 2?')
+                inputint = input()
+                try:
+                    inputint = int(inputint)
+                except (ValueError, TypeError):
+                    raise _matherr.TypesError("ты ввел не число")
+                if inputint != 5:
+                    _print(f'nerd: ХАХАХАХА!! {inputint}? НЕВЕРНО!')
+                    raise _err.TrubkaError("nerd обозвал тебя тупицей") from None
                 return func(*a, **k)
 
             _print('nerd: ТААК! ХОЧЕШЬ ТУТ ФУНКЦИЮ ЗАПУСТИТЬ? ДАВАЙ ОТВЕЧАЙ')
@@ -78,15 +91,18 @@ def nerd(func):
                 _print("nerd: ТЕБЯ НЕ СПРАШИВАЛИ БЫСТРО ОТВЕТЬ!")
             else:
                 _print('nerd: ТЕПЕРЬ ОТВЕЧАЙ:')
-            
             return test()
-
         except KeyboardInterrupt:
             _print("\n[#FF0000]nerd: КУДА ПОБЕЖАЛ?!")
-            raise err.LogoutError("ты сбежал от этого психа но функция не выполнилась") from None
+            raise _err.LogoutError("ты сбежал от этого психа но функция не выполнилась") from None
     return runner
 
 def null(func):
     def nullfunc(*a, **k):
         pass
     return nullfunc
+
+__all__ = [
+    "null", "nerd",
+    "keylocker", "time_meter"
+]

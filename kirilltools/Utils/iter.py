@@ -23,3 +23,8 @@ def list_flattening(list_: list) -> list:
         else:
             result_list.extend(i)
     return result_list
+
+__all__ = [
+    "list_flattening",
+    "gen_chank"
+]

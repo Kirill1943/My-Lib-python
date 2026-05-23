@@ -1,5 +1,8 @@
 import platform as _platform, psutil as _psutil
 import rich.live
+import time as _time
+from kirilltools.errors import math as _err
+import os as _os
 
 class ramInfo:
     def __init__(self) -> None:
@@ -75,50 +78,93 @@ class PlatFormInfo:
         }
         return dicter
 
+class DiskInfo:
+    def __init__(self) -> None:
+        pass
+    def get(self) -> dict:
+        dict_ = {}
+        for part in _psutil.disk_partitions(all=False):
+            if _os.name == 'nt' and ('cdrom' in part.opts or not part.fstype):
+                continue
+            try:
+                usage = _psutil.disk_usage(part.mountpoint)
+                dict_[part.mountpoint] = {
+                    "mountpoint": part.mountpoint,
+                    "totalGB": usage.total / (1024 ** 3),
+                    "UsageGB": usage.used / (1024 ** 3),
+                    "FreeGB": usage.free / (1024 ** 3)
+                }
+            except (PermissionError, FileNotFoundError, OSError):
+                continue
+        return dict_
 
 class monitor:
     def __init__(self, fps) -> None:
-        self.fps = fps
+        try:
+            fps = int(fps)
+        except (ValueError, TypeError):
+            raise _err.TypesError("ты указал не int в поле fps!")
+        self.fps = max(2, min(fps, 60))
     def run(self) -> None:
-        with rich.live.Live('', refresh_per_second=max(2, min(self.fps, 60))) as live:
+        with rich.live.Live('', refresh_per_second=self.fps) as live:
             try:
                 gb = 1024 ** 3
                 ramclass = ramInfo()
                 platformclass = PlatFormInfo()
                 batteryclass = BatteryInfo()
+                Diskclass = DiskInfo()
                 while True:
                     ram = ramclass.getram()
                     swap = ramclass.getswap()
                     info = platformclass.get()
                     battery = batteryclass.get()
+                    disks = Diskclass.get()
                     isbatt = battery["battery?"]
+                    disks_line = []
+                    for part_key in disks.keys():
+                        part_data = disks[part_key]
+                        disks_line.append(
+                            f"{part_data['mountpoint']}: Раздел {part_data['mountpoint']} "
+                            f"Всего: {part_data['totalGB']:.2f} GB, "
+                            f"занято: {part_data['UsageGB']:.2f} GB, "
+                            f"свободно: {part_data['FreeGB']:.2f} GB"
+                        )
                     live.update(
                         f'''
 [#008cff]-------- RAM / SWAP --------[/]
-[#008cff]Ram-USED: {ram["used"] / gb:.6f} GB
-[#008cff]Ram-FREE: {ram["free"] / gb:.6f} GB
-[#008cff]Ram-TOTAL: {ram["all"] / gb:.6f} GB
-[#00fffb]SWAP-USED: {swap["used"] / gb:.6f} GB
-[#00fffb]SWAP-FREE: {swap["free"] / gb:.6f} GB
-[#00fffb]SWAP-TOTAL: {swap["all"] / gb:.6f} GB
+[#008cff]использовано ОЗУ: {ram["used"] / gb:.6f} GB
+[#008cff]свободно ОЗУ: {ram["free"] / gb:.6f} GB
+[#008cff]всего ОЗУ: {ram["all"] / gb:.6f} GB
+[#00fffb]использовано СВОП: {swap["used"] / gb:.6f} GB
+[#00fffb]свободно СВОП: {swap["free"] / gb:.6f} GB
+[#00fffb]всего СВОП: {swap["all"] / gb:.6f} GB
 [#48ff00]--------- PLATFORM ----------[/]
-[#48ff00]os: {info["info"]["os"]} {info["info"]['release']}
-[#48ff00]version: {info['info']['vers']}
-[#48ff00]release: {info["info"]['release']}
+[#48ff00]ос: {info["info"]["os"]} {info["info"]['release']}
+[#48ff00]версия (сборка): {info['info']['vers']}
+[#48ff00]релиз: {info["info"]['release']}
 [#48ff00]---------------
-[#48ff00]WINDOWS?: {info["info"]["oses"]["win"]}
-[#48ff00]LINUX?: {info["info"]["oses"]["linux"]}
-[#48ff00]MACOS?: {info["info"]["oses"]['macos']}
+[#48ff00]Виндолс?: {info["info"]["oses"]["win"]}
+[#48ff00]Линукс?: {info["info"]["oses"]["linux"]}
+[#48ff00]Мак Ос?: {info["info"]["oses"]['macos']}
+[#48ff00]Собственная ос?: {not info["info"]["oses"]["win"] and not info["info"]["oses"]["linux"] and not info["info"]["oses"]["macos"]}
 [#c8ff00]-------- BATTERY ]--------[/]
-[#c8ff00]is battery?: {isbatt}
+[#c8ff00]батарея есть?: {isbatt}
 [#c8ff00]количество %: {battery["заряд %"] if isbatt else None}
 [#c8ff00]осталось до разряда батареи: {battery['осталось до разряда'] if isbatt else None}
 [#c8ff00]заряжается?: {battery["заряжается?"] if isbatt else None}
+[#ff0000]-------- DISKS / Диски --------[/]
+[#ff0000]{"\n".join(disks_line)}
                         '''
                     )
+                    _time.sleep(1 / self.fps)
             except KeyboardInterrupt:
                 print('done')
                 return
             except Exception as e:
                 print(f'возникла ошибка: {e}')
                 return
+
+__all__ = [
+    "monitor", "ramInfo",
+    "BatteryInfo", "PlatformInfo", "DiskInfo"
+]

@@ -98,3 +98,11 @@ def keys() -> dict:
         ]
     }
     return dict_keys
+
+
+__all__ = [
+    "keys", "custom_cipher",
+    "uncoding_caesar_cipher",
+    "Super_Uncode_Caesar_Cipher",
+    "Super_Caesar_Cipher", "Caesar_cipher"
+]

@@ -95,3 +95,10 @@ def Log(message: str, levellog: int, color: bool = False) -> None:
         critical(message=message, color=color)
     else:
         CustomLog(message=message, levellog="CUSTOM", color=color)
+
+
+__all__ = [
+    "Log", "CustomLog",
+    "debug", "info", "warning",
+    "error", "critical"
+]

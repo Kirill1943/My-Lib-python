@@ -140,3 +140,7 @@ def SortFiles(path) -> None:
                 if i.name == "__pycache__":
                     i.rename(pycache_dir / f'{i.name}-{pycache_count}')
                     pycache_count += 1
+
+__all__ = [
+    "GenStructures", "SortFiles"
+]
