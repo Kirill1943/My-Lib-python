@@ -1,5 +1,7 @@
 from pathlib import Path
-import kirilltools.errors.FilesAndDir as err
+import kirilltools.errors.FilesAndDir as _err
+from os import remove as _rm
+from shutil import rmtree as _rmtree
 
 class GenStructures:
     """
@@ -13,9 +15,9 @@ class GenStructures:
         """
         target_path = Path(path)
         if target_path.is_file():
-            raise err.IsFileError("путь указывает на файл")
+            raise _err.IsFileError("путь указывает на файл")
         elif not target_path.is_dir():
-            raise err.NotPathError("такого пути не существует")
+            raise _err.NotPathError("такого пути не существует")
         else:
             dirs = ["bin", "build", "include", "lib", "src"]
             files = ["Makefile", "README.md"]
@@ -36,9 +38,9 @@ class GenStructures:
         """
         target_path = Path(path)
         if target_path.is_file():
-            raise err.IsFileError("путь указывает на файл")
+            raise _err.IsFileError("путь указывает на файл")
         elif not target_path.is_dir():
-            raise err.NotPathError("такого пути не существует")
+            raise _err.NotPathError("такого пути не существует")
         else:
             dirlib = "Lib"
             files = ["README.md", "setup.py", "pyproject.toml"]
@@ -60,9 +62,9 @@ class GenStructures:
         """
         target_path = Path(path)
         if target_path.is_file():
-            raise err.IsFileError("путь указывает на файл")
+            raise _err.IsFileError("путь указывает на файл")
         elif not target_path.is_dir():
-            raise err.NotPathError("такого пути не существует")
+            raise _err.NotPathError("такого пути не существует")
         else:
             dirs = ["Code", "Settings", "Bin"]
             files = ["README.md"]
@@ -81,9 +83,9 @@ class GenStructures:
         """
         target_path = Path(path)
         if target_path.is_file():
-            raise err.IsFileError("путь указывает на файл")
+            raise _err.IsFileError("путь указывает на файл")
         elif not target_path.is_dir():
-            raise err.NotPathError("такого пути не существует")
+            raise _err.NotPathError("такого пути не существует")
         else:
             dirs = ["Styles", "Scripts"]
             files = ["README.md", "index.html"]
@@ -99,9 +101,9 @@ class GenStructures:
 def SortFiles(path) -> None:
     target_path = Path(path)
     if target_path.is_file():
-        raise err.IsFileError("путь указывает на файл")
+        raise _err.IsFileError("путь указывает на файл")
     elif not target_path.is_dir():
-        raise err.NotPathError("такого пути не существует")
+        raise _err.NotPathError("такого пути не существует")
     else:
         images_dir = target_path / "Изображения"
         txt_dir = target_path / "Текст"
@@ -141,6 +143,21 @@ def SortFiles(path) -> None:
                     i.rename(pycache_dir / f'{i.name}-{pycache_count}')
                     pycache_count += 1
 
+def NoPycache(path):
+    target_path = Path(path)
+    if target_path.is_file():
+        raise _err.IsFileError("путь указывает на файл")
+    elif not target_path.is_dir():
+        raise _err.NotPathError("такого пути не существует")
+    else:
+        for obj in target_path.rglob("*.pyc"):
+            if obj.is_file():
+                _rm(obj)
+        for obj in target_path.rglob("__pycache__"):
+            if obj.is_dir():
+                _rmtree(obj)
+
+
 __all__ = [
-    "GenStructures", "SortFiles"
+    "GenStructures", "SortFiles", "NoPycache"
 ]

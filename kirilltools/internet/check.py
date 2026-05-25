@@ -91,11 +91,16 @@ def ping() -> str:
     return "\n".join([f"{k} ответил? {v}" for k, v in results.items()])
 
 def MultCheck(http1: bool = True, http2: bool = True, log: bool = False) -> str:
+    try: 
+        import h2
+        http2 = True if http2 else False
+    except ImportError: 
+        http2 = False
     targets = [
         ("github", "http://github.com"),
         ("yandex", "http://yandex.ru"),
         ("google", "http://google.com"),
-        ("dns google", "http://8.8.8"),
+        ("dns google", "http://8.8.8.8"),
         ("pypi", "http://pypi.org")
     ]
     lines = []
