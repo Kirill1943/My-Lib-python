@@ -127,7 +127,7 @@ def SortFiles(path) -> None:
                 ext = i.suffix.lower()
                 if ext in ['.txt', '.md']:
                     i.rename(txt_dir / i.name)
-                elif ext in ['.png', '.jpg', 'jpeg', '.webp']:
+                elif ext in ['.png', '.jpg', '.jpeg', '.webp']:
                     i.rename(images_dir / i.name)
                 elif ext in [".py", ".pyi"]:
                     i.rename(pycode_dir / i.name)

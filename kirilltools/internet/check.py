@@ -3,6 +3,15 @@ import json as _json
 import asyncio as _asyncio
 import kirilltools.errors.base as _err
 
+TARGETS_CHECK = [
+    ("github", "http://github.com"),
+    ("yandex", "http://yandex.ru"),
+    ("google", "http://google.com"),
+    ("dns google", "http://8.8.8.8"),
+    ("pypi", "http://pypi.org"),
+    ("wikipedia", "http://wikipedia.org")
+]
+
 class Get:
     def __init__(self, async_: bool = False) -> None:
         self.async_ = async_
@@ -52,16 +61,27 @@ class Get:
         except (_httpx.ReadTimeout, _httpx.ConnectError, _httpx.ConnectTimeout):
             raise Exception('Нету подключения к интернету!')
 
-    async def aget(self, url: str) -> dict:
+    async def aget(self, url: str) -> list:
+        if not self.async_:
+            raise RuntimeError(
+                "Ошибка в kirilltools: Класс Get создан в СИНХРОННОМ режиме. "
+                "Используйте метод .get() вместо .aget() без ключевого слова await!"
+            )
+            
         if not url.startswith(('http://', 'https://')):
             url = 'http://' + url
         return await self._async_get(url)
 
-    def get(self, url: str) -> dict:
+
+    def get(self, url: str) -> list:
+        if self.async_:
+            raise RuntimeError(
+                "Ошибка в kirilltools: Класс Get создан в АСИНХРОННОМ режиме. "
+                "Используйте метод .aget() с ключевым словом await (например: await client.aget(url))!"
+            )
+            
         if not url.startswith(('http://', 'https://')):
             url = 'http://' + url
-        if self.async_:
-            raise RuntimeError("Для асинхронного режима используйте метод aget() с await!")
         return self._sync_get(url)
 
     async def testinet(self) -> list:
@@ -75,8 +95,8 @@ class Get:
 def ping() -> str:
     targets = {
         "google": "http://google.com",
-        "dns гугла": "http://8.8.8",
-        "dns cloudflare": "http://1.1.1",
+        "dns гугла": "http://8.8.8.8",
+        "dns cloudflare": "http://1.1.1.1",
         "yandex": "http://yandex.ru"
     }
     results = {}
@@ -96,17 +116,10 @@ def MultCheck(http1: bool = True, http2: bool = True, log: bool = False) -> str:
         http2 = True if http2 else False
     except ImportError: 
         http2 = False
-    targets = [
-        ("github", "http://github.com"),
-        ("yandex", "http://yandex.ru"),
-        ("google", "http://google.com"),
-        ("dns google", "http://8.8.8.8"),
-        ("pypi", "http://pypi.org")
-    ]
     lines = []
     try:
         with _httpx.Client(http1=http1, http2=http2, follow_redirects=True, timeout=3) as client:
-            for name, url in targets:
+            for name, url in TARGETS_CHECK:
                 try:
                     status = client.get(url).status_code
                 except (_httpx.ConnectError, _httpx.ReadTimeout, _httpx.ConnectTimeout, _httpx.TimeoutException, _httpx.RequestError):
@@ -122,6 +135,38 @@ def MultCheck(http1: bool = True, http2: bool = True, log: bool = False) -> str:
         
     return "\n".join(lines)
 
+
+async def __AsyncCheck(client: _httpx.AsyncClient, url: str) -> int:
+    try:
+        response = await client.get(url)
+        return response.status_code
+    except (_httpx.ConnectError, _httpx.ReadTimeout, _httpx.ConnectTimeout, _httpx.TimeoutException, _httpx.RequestError):
+        return 0
+
+async def AsyncMultCheck(http1: bool = True, http2: bool = True, log: bool = False) -> str:
+    try: 
+        import h2
+        http2 = True if http2 else False
+    except ImportError: 
+        http2 = False
+    lines = []
+    
+    async with _httpx.AsyncClient(http1=http1, http2=http2, follow_redirects=True, timeout=3) as client:
+        tasks = [__AsyncCheck(client, url) for _, url in TARGETS_CHECK]
+        
+        results = await _asyncio.gather(*tasks)
+        
+        for (name, _), status in zip(TARGETS_CHECK, results):
+            msg = f"{name}: {'Ответил' if status != 0 else 'Нет соединения'}, status code: {status}"
+            if log:
+                print(msg)
+            lines.append(msg)
+            
+    return "\n".join(lines)
+
+
+
 __all__ = [
-    "MultCheck", "ping", "Get"
+    "MultCheck", "ping", 
+    "Get", "AsyncMultCheck"
 ]
