@@ -63,7 +63,7 @@ class Get:
 
     async def aget(self, url: str) -> list:
         if not self.async_:
-            raise RuntimeError(
+            raise _err.StartError(
                 "Ошибка в kirilltools: Класс Get создан в СИНХРОННОМ режиме. "
                 "Используйте метод .get() вместо .aget() без ключевого слова await!"
             )
@@ -75,7 +75,7 @@ class Get:
 
     def get(self, url: str) -> list:
         if self.async_:
-            raise RuntimeError(
+            raise _err.StartError(
                 "Ошибка в kirilltools: Класс Get создан в АСИНХРОННОМ режиме. "
                 "Используйте метод .aget() с ключевым словом await (например: await client.aget(url))!"
             )

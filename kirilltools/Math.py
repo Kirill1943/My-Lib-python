@@ -7,6 +7,8 @@ def get_kilo(square_meters: float, kilo_in_one_meter_cubed: float = 1) -> float:
         kilo_in_one_meter_cubed = float(kilo_in_one_meter_cubed)
     except (ValueError, TypeError):
         raise err.TypesError("нельзя умножить строки и числа и получить массу!") from None
+    except KeyboardInterrupt:
+        raise baseerr.ForceInterruptionError("скрипт прерван")
     kg = kilo_in_one_meter_cubed * square_meters
     return float(kg)
 
@@ -32,11 +34,19 @@ def tetration(num: int, height: int) -> int:
     except KeyboardInterrupt:
         raise baseerr.ForceInterruptionError("скрипт прерван")
 
-def double_factorial(x) -> int:
+def double_factorial(x: int) -> int:
+    """
+    двойной факториал который умножает числа n 
+    только той же разрядности что и n
+    
+    например: 5!! = 1 * 3 * 5 = 15
+    """
     try:
         x = int(x)
     except (ValueError, TypeError):
         raise err.TypesError("ты ввел не число!")
+    except KeyboardInterrupt:
+        raise baseerr.ForceInterruptionError("скрипт прерван")
     if x <= 0:
         return 1
     result = 1
@@ -44,6 +54,28 @@ def double_factorial(x) -> int:
         result *= i
     return result
 
+def fib(x: int, print_result=False) -> list:
+    """
+    вычисляет числа фибоначчи, а именно 
+    числа с суммой 2 прошлых чисел
+    """
+    try:
+        x = int(x)
+    except (ValueError, TypeError):
+        raise err.TypesError("ты ввел не число!")
+    try:
+        result = []
+        a, b = 0, 1
+        c = a + b
+        while c < x:
+            a, b = b, a + b
+            c = a + b
+            if print_result: print(c, end=' ')
+            result.append(c)
+    except KeyboardInterrupt:
+        raise baseerr.ForceInterruptionError("скрипт прерван")
+
 __all__ = [
-    "tetration", "double_factorial", "get_kilo"
+    "tetration", "double_factorial", 
+    "get_kilo", "fib"
 ]

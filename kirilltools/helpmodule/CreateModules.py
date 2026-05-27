@@ -116,9 +116,47 @@ pip install . --user
     except KeyboardInterrupt:
         raise _ForceInterruptionError("ты прервал скрипт") from None
 
+
+def help14() -> None:
+    txt = """
+а теперь разберем работу с многопоточностью, представь что
+тебе нужно выполнить одновременно 3 каких-нибудь сложные задачи. и выполнять все по очереди: не вариант.
+
+для этого и существует многопоточность. если что она встроена, для этого мы импортируем
+специальный для этого модуль: threading:
+
+import threading # так раз модуль многопоточности
+from time import sleep # этот модуль time нужен для задержки
+
+# наша функция Function:
+def Function():
+    sleep(3)
+    print('2 поток окончен!')
+
+Thread = threading.Thread(
+    target=Function, # указываем нашу функцию. ИМЕННО ОБЬЕКТ ФУНКЦИИ БЕЗ СКОБОК!
+    daemon=False # поток независим от того завершится ли основной или нет если указать False, а если True: поток закончится если основной закрылся
+)
+print('Запуск потока..')
+Thread.start() # запуск потока
+print('1 поток завершен')
+
+но это не настоящая многопоточность. пайтон изначально
+работает на 1 ядре и переключается между потоками. нахрена? а это
+чтобы несколько потоков не записали данные одновременно. возникла бы каша
+этот замок называется GIL (Global Interpreter Lock)
+но иногда этот замок действительно мешает
+"""
+    try:
+        for i in txt:
+            print(i, end='', flush=True)
+            _time.sleep(0.001)
+    except KeyboardInterrupt:
+        raise _ForceInterruptionError("ты прервал скрипт") from None
+
 def helpall() -> None:
     glbs = globals()
-    for i in range(1, 14):
+    for i in range(1, 15):
         glbs[f"help{i}"]()
 
 
@@ -126,5 +164,5 @@ __all__ = [
     "help1", "help2", "help3", "help4", 
     "help5", "help6", "help7", "help8", 
     "help9", "help10", "help11", "help12",
-    "help13", "helpall"
+    "help13", "help14", "helpall"
 ]

@@ -36,7 +36,6 @@ def debug(message: str, color: bool = False) -> None:
     если вы используете обычный print, оставьте опцию color: False
     ведь может случиться конфликт print и rich.print
     """
-    # Добавил время, как в info(), и зеленый цвет для дебага
     if color:
         _rich.print(f'[green][ {_gettime()} ] [ DEBUG ] {message}')
     else:
