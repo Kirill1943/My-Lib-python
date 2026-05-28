@@ -98,6 +98,92 @@ class DiskInfo:
                 continue
         return dict_
 
+class WebInfo:
+    def __init__(self) -> None:
+        self.last_net = _psutil.net_io_counters()
+        self.last_time = _time.perf_counter()
+
+    def get_network_speed(self) -> dict:
+        current_net = _psutil.net_io_counters()
+        current_time = _time.perf_counter()
+        time_delta = current_time - self.last_time
+        
+        if time_delta <= 0:
+            return {"download_mb": 0.0, "upload_mb": 0.0}
+            
+        download_bytes = current_net.bytes_recv - self.last_net.bytes_recv
+        send_bytes = current_net.bytes_sent - self.last_net.bytes_sent
+        
+        megabits_recv = (download_bytes / (1024 ** 2)) / time_delta
+        megabits_sent = (send_bytes / (1024 ** 2)) / time_delta
+        
+        self.last_net = current_net
+        self.last_time = current_time
+        
+        return {
+            "download_mb": round(megabits_recv, 2),
+            "upload_mb": round(megabits_sent, 2)
+        }
+    def get_errors_drops(self) -> dict:
+        net = _psutil.net_io_counters()
+        return {
+            "err": {
+                "in": net.errin,
+                "out": net.errout
+            },
+            "drop": {
+                "in": net.dropin,
+                "out": net.dropout
+            }
+        }
+    def get_adapters(self) -> dict:
+        interfaces = _psutil.net_if_addrs()
+        stats = _psutil.net_if_stats()
+        adapters_dict = {}
+
+        for interface_name, addresses in interfaces.items():
+            is_active = stats[interface_name].isup if interface_name in stats else False
+            
+            if not is_active:
+                continue
+            adapters_dict[interface_name] = {
+                "active": is_active,
+                "ipv4": None,
+                "ipv6": None,
+                "mac": None
+            }
+
+            for addr in addresses:
+                if addr.family == _psutil.AF_LINK:
+                    adapters_dict[interface_name]["mac"] = addr.address
+                elif addr.family == 2:
+                    adapters_dict[interface_name]["ipv4"] = addr.address
+                elif addr.family == 23:
+                    adapters_dict[interface_name]["ipv6"] = addr.address
+
+        return adapters_dict
+
+class CpuInfo:
+    def __init__(self) -> None:
+        self.logic_cores = _psutil.cpu_count(logical=True)
+        self.realy_cores = _psutil.cpu_count(logical=False)
+    def get_freq(self) -> dict:
+        dict_ = {
+            "max GHz": "?",
+            "Now GHz": "?"
+        }
+        try:
+            freq = _psutil.cpu_freq()
+            if freq:
+                dict_ = {
+                    "max GHz": freq.current / 1000,
+                    "Now GHz": freq.max / 1000
+                }
+        except Exception:
+            pass
+        return dict_
+    def get_load(self) -> float:
+        return _psutil.cpu_percent(interval=None)
 class monitor:
     def __init__(self, fps) -> None:
         try:
@@ -113,6 +199,8 @@ class monitor:
                 platformclass = PlatFormInfo()
                 batteryclass = BatteryInfo()
                 Diskclass = DiskInfo()
+                WebClass = WebInfo()
+                CoreClass = CpuInfo()
                 while True:
                     ram = ramclass.getram()
                     swap = ramclass.getswap()
@@ -120,6 +208,9 @@ class monitor:
                     battery = batteryclass.get()
                     disks = Diskclass.get()
                     isbatt = battery["battery?"]
+                    network_speed = WebClass.get_network_speed()
+                    network_droperr = WebClass.get_errors_drops()
+                    adapters = WebClass.get_adapters()
                     disks_line = []
                     for part_key in disks.keys():
                         part_data = disks[part_key]
@@ -129,6 +220,7 @@ class monitor:
                             f"занято: {part_data['UsageGB']:.2f} GB, "
                             f"свободно: {part_data['FreeGB']:.2f} GB"
                         )
+                        "#FFFEB2"
                     live.update(
                         f'''
 [#008cff]-------- RAM / SWAP --------[/]
@@ -147,13 +239,25 @@ class monitor:
 [#48ff00]Линукс?: {info["info"]["oses"]["linux"]}
 [#48ff00]Мак Ос?: {info["info"]["oses"]['macos']}
 [#48ff00]Собственная ос?: {not info["info"]["oses"]["win"] and not info["info"]["oses"]["linux"] and not info["info"]["oses"]["macos"]}
-[#c8ff00]-------- BATTERY ]--------[/]
+[#c8ff00]-------- BATTERY --------[/]
 [#c8ff00]батарея есть?: {isbatt}
 [#c8ff00]количество %: {battery["заряд %"] if isbatt else None}
 [#c8ff00]осталось до разряда батареи: {battery['осталось до разряда'] if isbatt else None}
 [#c8ff00]заряжается?: {battery["заряжается?"] if isbatt else None}
-[#ff0000]-------- DISKS / Диски --------[/]
+[#ff0000]-------- DISKS / ДИСКИ --------[/]
 [#ff0000]{"\n".join(disks_line)}
+[#00B0DC]-------- WEB / NET / СЕТЬ --------[/]
+[#0000FF]Скачивание: {(download := network_speed["download_mb"]):.2f} Mb/s | {round(download * 8, 2)} Mbps
+[#FF0000]Отправка: {(upload := network_speed["upload_mb"]):.2f} Mb/s | {round(upload * 8, 2)} Mbps
+[#FF0000]Битые пакеты от сервера: {network_droperr["err"]["in"]}
+[#FF0000]Битые пакеты от устройства: {network_droperr["err"]["out"]}
+[#FF8800]Дропнутые пакеты устройством (из сети): {network_droperr["drop"]["in"]}
+[#FF8800]не отправленные пакеты: {network_droperr["drop"]["out"]}
+[#00B0DC]-------- WEB / NET / СЕТЬ - СЕТИ --------[/]
+{"\n".join([f"[#00B0DC]📡 {name} | Активен: {data['active']} | IP: {data['ipv4']} | MAC: {data['mac']}" for name, data in adapters.items() if data['ipv4']])}
+[#FFFEB2]-------- CORE / ПРОЦЕССОР --------[/]
+[#FFFEB2]физические ядра / логические ядра (потоки): {CoreClass.realy_cores} / {CoreClass.logic_cores}
+[#FFFEB2]Текущая нагрузка: {CoreClass.get_load():.1f}%
                         '''
                     )
                     _time.sleep(1 / self.fps)
@@ -166,5 +270,5 @@ class monitor:
 
 __all__ = [
     "monitor", "ramInfo",
-    "BatteryInfo", "PlatformInfo", "DiskInfo"
+    "BatteryInfo", "PlatFormInfo", "DiskInfo", "WebInfo", "CpuInfo"
 ]
