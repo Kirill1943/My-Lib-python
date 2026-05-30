@@ -8,7 +8,7 @@ else:
         "kirilltools.errors.iter", "kirilltools.errors.math", "kirilltools.errors.Wifi"
     ]
     from .base import *
-    from . import base, cipherError, decorators, FilesAndDir, iter, math, Wifi
+    from . import base, cipherError, decorators, FilesAndDir, iter, Wifi
     __all__ = [
         "base", "cipherError", "decorators", "FilesAndDir" , "iter", "math", "Wifi"
     ]

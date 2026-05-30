@@ -58,15 +58,22 @@ def fib(x: int, print_result=False) -> list:
     """
     вычисляет числа фибоначчи, а именно 
     числа с суммой 2 прошлых чисел
+
+    x: количество чисел фибоначчи
     """
     try:
         x = int(x)
     except (ValueError, TypeError):
         raise err.TypesError("ты ввел не число!")
+    if x < 0:
+        raise err.TypesError("x должен быть не меньше 0!")
+    elif x == 0:
+        return []
     try:
         result = []
         a, b = 0, 1
         c = a + b
+        result.append(c)
         while c < x:
             a, b = b, a + b
             c = a + b
@@ -74,6 +81,7 @@ def fib(x: int, print_result=False) -> list:
             result.append(c)
     except KeyboardInterrupt:
         raise baseerr.ForceInterruptionError("скрипт прерван")
+    return result
 
 __all__ = [
     "tetration", "double_factorial", 

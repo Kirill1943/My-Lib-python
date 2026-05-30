@@ -16,6 +16,8 @@ def gen_chank(list_: list, size: int) -> list:
     return [list_[i:i + size] for i in range(0, len(list_), size)]
 
 def list_flattening(list_: list) -> list:
+    if not isinstance(list_, list):
+        raise err.NotAListError("В list_ нужно передать именно список")
     result_list = []
     for i in list_:
         if not isinstance(i, list):
