@@ -23,6 +23,7 @@ def Super_Caesar_Cipher(text: str, next: int = 1024, once: int = 2) -> str:
     """
     try:
         once = int(once)
+        next = int(next)
     except (ValueError, TypeError):
         raise TypesError("ты ввел не число в поле once!") from None
     result = text
@@ -36,6 +37,7 @@ def Super_Uncode_Caesar_Cipher(text: str, next: int = 1024, once: int = 2) -> st
     """
     try:
         once = int(once)
+        next = int(next)
     except (ValueError, TypeError):
         raise TypesError("ты ввел не число в поле once!") from None
     result = text

@@ -1,7 +1,6 @@
 from kirilltools.errors import iter as err
 from kirilltools.errors import math as matherr
 
-
 def gen_chank(list_: list, size: int) -> list:
     try:
         size = int(size)
