@@ -1,8 +1,9 @@
 import platform as _platform, psutil as _psutil
 import rich.live
 import time as _time
-from kirilltools.errors import math as _err
+import kirilltools.errors.math as _err
 import os as _os
+import GPUtil as _GPUtil
 
 class ramInfo:
     def __init__(self) -> None:
@@ -184,6 +185,26 @@ class CpuInfo:
         return dict_
     def get_load(self) -> float:
         return _psutil.cpu_percent(interval=None)
+
+class GpuInfo:
+    def __init__(self):
+        pass
+    def get(self) -> list:
+        gpus = _GPUtil.getGPUs()
+        list_ = []
+
+        for gpu in gpus:
+            list_.append( # Исправили list на list_
+                {
+                    "model": gpu.name,
+                    "load": round(gpu.load * 100, 1),
+                    "MemoryALL": gpu.memoryTotal, # Всего памяти на карте
+                    "MemoryUsed": gpu.memoryUsed,   # Исправили имя ключа на понятное
+                    "temperature": gpu.temperature
+                }
+            )
+
+        return list_
 class monitor:
     def __init__(self, fps) -> None:
         try:
@@ -201,6 +222,7 @@ class monitor:
                 Diskclass = DiskInfo()
                 WebClass = WebInfo()
                 CoreClass = CpuInfo()
+                Gpuclass = GpuInfo()
                 while True:
                     ram = ramclass.getram()
                     swap = ramclass.getswap()
@@ -211,6 +233,8 @@ class monitor:
                     network_speed = WebClass.get_network_speed()
                     network_droperr = WebClass.get_errors_drops()
                     adapters = WebClass.get_adapters()
+                    Gpus = Gpuclass.get()
+                    Gpus_line = []
                     disks_line = []
                     for part_key in disks.keys():
                         part_data = disks[part_key]
@@ -220,25 +244,27 @@ class monitor:
                             f"занято: {part_data['UsageGB']:.2f} GB, "
                             f"свободно: {part_data['FreeGB']:.2f} GB"
                         )
-                        "#FFFEB2"
+                    if not Gpus:
+                        Gpus_line.append("[#ff0000]Видеокарты не обнаружены или не поддерживаются[/]")
+                    else:
+                        for gpu in Gpus:
+                            Gpus_line.append(
+                                f"[#B6B300]🎮 Модель:[/] {gpu['model']}\n"
+                                f"[#B6B300]📊 Нагрузка чипа:[/] {gpu['load']}% | [#B6B300]🌡️ Temp:[/] {gpu['temperature']} °C\n"
+                                f"[#B6B300]💾 Видеопамять:[/] {gpu['MemoryTOTAL']} МБ / {gpu['MemoryALL']} МБ"
+                            )
                     live.update(
                         f'''
 [#008cff]-------- RAM / SWAP --------[/]
-[#008cff]использовано ОЗУ: {ram["used"] / gb:.6f} GB
-[#008cff]свободно ОЗУ: {ram["free"] / gb:.6f} GB
-[#008cff]всего ОЗУ: {ram["all"] / gb:.6f} GB
-[#00fffb]использовано СВОП: {swap["used"] / gb:.6f} GB
-[#00fffb]свободно СВОП: {swap["free"] / gb:.6f} GB
-[#00fffb]всего СВОП: {swap["all"] / gb:.6f} GB
+[#008cff]использовано ОЗУ: {ram["used"] / gb:.6f} GB, свободно ОЗУ: {ram["free"] / gb:.6f} GB, всего ОЗУ: {ram["all"] / gb:.6f} GB
+[#00fffb]использовано СВОП: {swap["used"] / gb:.6f} GB, свободно СВОП: {swap["free"] / gb:.6f} GB, всего СВОП: {swap["all"] / gb:.6f} GB
 [#48ff00]--------- PLATFORM ----------[/]
 [#48ff00]ос: {info["info"]["os"]} {info["info"]['release']}
 [#48ff00]версия (сборка): {info['info']['vers']}
 [#48ff00]релиз: {info["info"]['release']}
 [#48ff00]---------------
-[#48ff00]Виндолс?: {info["info"]["oses"]["win"]}
-[#48ff00]Линукс?: {info["info"]["oses"]["linux"]}
-[#48ff00]Мак Ос?: {info["info"]["oses"]['macos']}
-[#48ff00]Собственная ос?: {not info["info"]["oses"]["win"] and not info["info"]["oses"]["linux"] and not info["info"]["oses"]["macos"]}
+[#48ff00]Виндолс?: {info["info"]["oses"]["win"]}, Линукс?: {info["info"]["oses"]["linux"]}
+[#48ff00]Мак Ос?: {info["info"]["oses"]['macos']}, Собственная ос?: {not info["info"]["oses"]["win"] and not info["info"]["oses"]["linux"] and not info["info"]["oses"]["macos"]}
 [#c8ff00]-------- BATTERY --------[/]
 [#c8ff00]батарея есть?: {isbatt}
 [#c8ff00]количество %: {battery["заряд %"] if isbatt else None}
@@ -249,8 +275,7 @@ class monitor:
 [#00B0DC]-------- WEB / NET / СЕТЬ --------[/]
 [#0000FF]Скачивание: {(download := network_speed["download_mb"]):.2f} Mb/s | {round(download * 8, 2)} Mbps
 [#FF0000]Отправка: {(upload := network_speed["upload_mb"]):.2f} Mb/s | {round(upload * 8, 2)} Mbps
-[#FF0000]Битые пакеты от сервера: {network_droperr["err"]["in"]}
-[#FF0000]Битые пакеты от устройства: {network_droperr["err"]["out"]}
+[#FF0000]Битые пакеты от сервера: {network_droperr["err"]["in"]} Битые пакеты от устройства: {network_droperr["err"]["out"]}
 [#FF8800]Дропнутые пакеты устройством (из сети): {network_droperr["drop"]["in"]}
 [#FF8800]не отправленные пакеты: {network_droperr["drop"]["out"]}
 [#00B0DC]-------- WEB / NET / СЕТЬ - СЕТИ --------[/]
@@ -258,6 +283,8 @@ class monitor:
 [#FFFEB2]-------- CORE / ПРОЦЕССОР --------[/]
 [#FFFEB2]физические ядра / логические ядра (потоки): {CoreClass.realy_cores} / {CoreClass.logic_cores}
 [#FFFEB2]Текущая нагрузка: {CoreClass.get_load():.1f}%
+[#B6B300]-------- GPU / ВИДЕОКАРТА --------[/]
+[#B6B300]{"\n".join(Gpus_line)}
                         '''
                     )
                     _time.sleep(1 / self.fps)
@@ -268,7 +295,9 @@ class monitor:
                 print(f'возникла ошибка: {e}')
                 return
 
+
+monitor(fps=60).run()
 __all__ = [
     "monitor", "ramInfo",
-    "BatteryInfo", "PlatFormInfo", "DiskInfo", "WebInfo", "CpuInfo"
+    "BatteryInfo", "PlatFormInfo", "DiskInfo", "WebInfo", "CpuInfo", "GpuInfo"
 ]

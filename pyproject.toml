@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Kirilltools"
-version = "0.3.9"
+version = "0.4.0-alpha1"
 description = "Всякие мелкие утилиты, справка, менеджер задач.."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -13,6 +13,7 @@ authors = [
   {name = "kirill1943"}
 ]
 dependencies = [
+    "GPUtil",
     "httpx",
     "h11",
     "httpcore",
