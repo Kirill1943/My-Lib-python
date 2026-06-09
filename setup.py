@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Kirilltools',
-    version='0.4.0-alpha1',
+    version='0.4.0-alpha2',
     packages=find_packages(),
     install_requires=[
         'httpx', 'h11', 'httpcore', 'anyio', # httpx и зависимости

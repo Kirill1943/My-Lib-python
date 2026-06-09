@@ -295,8 +295,8 @@ class monitor:
                 print(f'возникла ошибка: {e}')
                 return
 
-
-monitor(fps=60).run()
+if __name__ == "__main__":
+    monitor(fps=60).run()
 __all__ = [
     "monitor", "ramInfo",
     "BatteryInfo", "PlatFormInfo", "DiskInfo", "WebInfo", "CpuInfo", "GpuInfo"

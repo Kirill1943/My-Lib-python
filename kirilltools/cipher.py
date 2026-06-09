@@ -1,5 +1,6 @@
 from kirilltools.errors.math import TypesError
 import kirilltools.errors.cipherError as err
+from typing import overload
 
 def Caesar_cipher(text: str, next: int = 1024) -> str:
     """
@@ -61,6 +62,63 @@ def uncoding_caesar_cipher(text: str, next: int = 1024) -> str:
         return_text = return_text + str(i)
     return return_text
 
+@overload
+def Vigenere_cipher(text: str, key: list[int]) -> str: ...
+
+@overload
+def Vigenere_cipher(text: str, key: str) -> str: ...
+
+def Vigenere_cipher(text: str, key: list[int] | str) -> str:
+    """
+    Шифрует шифром Виженера по кодам Юникода.
+    Каждый символ сдвигается на число из списка key по нужному индексу
+    """
+    if not key:
+        return text
+    
+    # Если пришла строка, превращаем каждый символ в его Юникод-код
+    if isinstance(key, str):
+        working_key = [ord(k) for k in key]
+    else:
+        working_key = key
+        
+    result = ''
+    key_length = len(working_key)
+    
+    for i, char in enumerate(text):
+        current_shift = working_key[i % key_length]
+        new_unicode = ord(char) + current_shift
+        result = result + chr(new_unicode)
+    return result
+
+@overload
+def Uncode_Vigenere_cipher(text: str, key: list[int]) -> str: ...
+
+@overload
+def Uncode_Vigenere_cipher(text: str, key: str) -> str: ...
+
+def Uncode_Vigenere_cipher(text: str, key: list[int] | str) -> str:
+    """
+    раскодировывает шифром Виженера по кодам Юникода.
+    Каждый символ сдвигается назад на число из списка key по нужному индексу
+    """
+    if not key:
+        return text
+
+    if isinstance(key, str):
+        working_key = list(map(ord, key))
+    else:
+        working_key = key
+        
+    result = ''
+    key_length = len(working_key)
+    
+    for i, char in enumerate(text):
+        current_shift = working_key[i % key_length]
+        new_unicode = ord(char) - current_shift
+        result = result + chr(new_unicode)
+    return result
+
 def custom_cipher(text: str, key: list) -> str:
     """
     Шифрует сообщение пользовательским ключом за один безопасный проход,
@@ -77,7 +135,6 @@ def custom_cipher(text: str, key: list) -> str:
         return text.translate(translation_table)
     except Exception as e:
         raise err.KeyFormatError(f"Битый / неверный ключ! Ошибка: {e}") from None
-
 
 def keys() -> dict:
     """
@@ -106,5 +163,6 @@ __all__ = [
     "keys", "custom_cipher",
     "uncoding_caesar_cipher",
     "Super_Uncode_Caesar_Cipher",
-    "Super_Caesar_Cipher", "Caesar_cipher"
+    "Super_Caesar_Cipher", "Caesar_cipher",
+    "Uncode_Vigenere_cipher", "Vigenere_cipher"
 ]

@@ -3,6 +3,7 @@
 ### поддерживается:
 ✅ тесты [tests/ для тестирования проекта]
 ✅ шифрование цезаря (модуль kirilltools.cipher)
+✅ шифрование виженера (модуль kirilltools.cipher)
 ✅ современный способ установки с помощью pyproject.toml
 ✅ модуль гетинга (kirilltools.internet)
 ✅ справочный модуль (kirilltools.helpmodule)
