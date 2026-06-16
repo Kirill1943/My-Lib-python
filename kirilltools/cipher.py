@@ -76,10 +76,13 @@ def Vigenere_cipher(text: str, key: list[int] | str) -> str:
     if not key:
         return text
     
-    # Если пришла строка, превращаем каждый символ в его Юникод-код
     if isinstance(key, str):
         working_key = [ord(k) for k in key]
+    elif isinstance(key, (int, float, bool)):
+        raise TypesError("необходимо ввести ключ либо в виде списка с числами сдвига либо в виде строки")
     else:
+        if any(isinstance(element, str) for element in key):
+            raise err.KeyFormatError("в ключе обнаружен несоответствующий тип данных (str), замени строку на число")
         working_key = key
         
     result = ''
@@ -107,7 +110,11 @@ def Uncode_Vigenere_cipher(text: str, key: list[int] | str) -> str:
 
     if isinstance(key, str):
         working_key = list(map(ord, key))
+    elif isinstance(key, (int, float, bool)):
+        raise TypesError("необходимо ввести ключ либо в виде списка с числами сдвига либо в виде строки")
     else:
+        if any(isinstance(element, str) for element in key):
+            raise err.KeyFormatError("в ключе обнаружен несоответствующий тип данных (str), замени строку на число")
         working_key = key
         
     result = ''

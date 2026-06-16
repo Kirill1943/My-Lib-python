@@ -18,7 +18,19 @@ class CipherTest(unittest.TestCase):
     def test_keys_success(self):
         self.assertIsInstance(cipher.keys(), dict)
         self.assertIsNotNone(cipher.keys())
-
+    def test_vigenere_cipher_success(self):
+        self.assertEqual(cipher.Vigenere_cipher("abc", [3, 3, 3]), "def")
+        self.assertEqual(cipher.Vigenere_cipher("abc", str(chr(3)) * 3), "def")
+    def test_vigenere_cipher_error(self):
+        with self.assertRaises(matherr.TypesError):
+            cipher.Vigenere_cipher("abc", 4)
+        with self.assertRaises(ciphererr.KeyFormatError):
+            cipher.Vigenere_cipher("abc", [3, 2, "B"])
+    def test_uncode_vigenere_cipher_error(self):
+        with self.assertRaises(matherr.TypesError):
+            cipher.Uncode_Vigenere_cipher("def", 2)
+        with self.assertRaises(ciphererr.KeyFormatError):
+            cipher.Uncode_Vigenere_cipher("def", [3, 3, "A"])
 
 if __name__ == "__main__":
     unittest.main()
