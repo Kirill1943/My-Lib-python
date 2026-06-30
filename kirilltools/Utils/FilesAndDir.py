@@ -143,7 +143,7 @@ def SortFiles(path) -> None:
                     i.rename(pycache_dir / f'{i.name}-{pycache_count}')
                     pycache_count += 1
 
-def NoPycache(path):
+def NoPycache(path, log=False):
     target_path = Path(path)
     if target_path.is_file():
         raise _err.IsFileError("путь указывает на файл")
@@ -153,9 +153,13 @@ def NoPycache(path):
         for obj in target_path.rglob("*.pyc"):
             if obj.is_file():
                 _rm(obj)
+                if log:
+                    print(f'[УДАЛЕН] удален файл: {obj}')
         for obj in target_path.rglob("__pycache__"):
             if obj.is_dir():
                 _rmtree(obj)
+                if log:
+                    print(f'[ОЧИЩЕНО] удалена директория: {obj}')
 
 
 __all__ = [
